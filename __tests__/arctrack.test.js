@@ -20,5 +20,8 @@ describe('arctrack', () => {
         it('executes a \'load\' event handler when the page has loaded', () => {
             expect(constructorTest).toBe(1);
         });
+      it('expects true to be true', () => {
+        expect(true).toBe(true);
+      });
     });
 });
