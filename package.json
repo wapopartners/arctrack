@@ -1,0 +1,25 @@
+{
+  "name": "arctrack",
+  "version": "1.0.0",
+  "description": "Library for simply handling application analytics data layer",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wapopartners/arctrack.git"
+  },
+  "keywords": [
+    "analytics"
+  ],
+  "author": "wapopartners",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wapopartners/arctrack/issues"
+  },
+  "homepage": "https://github.com/wapopartners/arctrack#readme",
+  "devDependencies": {
+    "jest": "^22.0.4"
+  }
+}
