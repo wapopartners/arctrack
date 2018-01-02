@@ -21,7 +21,7 @@ describe('arctrack', () => {
             expect(constructorTest).toBe(1);
         });
       it('expects true to be true', () => {
-        expect(true).toBe(true);
+        expect(false).toBe(true);
       });
     });
 });
