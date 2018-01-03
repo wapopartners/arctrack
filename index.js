@@ -16,6 +16,7 @@ module.exports = class Arctrack {
   }
 
   onPageReady(opts) {
+    console.log('this test message should log in the console');
     if (opts.clickCb) {
       const onClick = this.trackClick(opts.clickCb);
       delegateEvent('click', onClick, `[${this.dataAttr}]`);
