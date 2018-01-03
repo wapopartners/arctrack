@@ -1,5 +1,7 @@
 const Arctrack = require('../index');
 
+jest.mock('../util/mineType');
+
 describe('arctrack', () => {
   const opts = {
     initCb: jest.fn(),
@@ -7,7 +9,7 @@ describe('arctrack', () => {
   }
   window.test = { property1: 'foo' };
   let at1 = new Arctrack({ name: 'test', opts });
-
+  document.body.innerHTML = '<a data-test="someClick"></a>';
   beforeAll(() => {
     window.dispatchEvent(new Event('load'));
   });
@@ -27,15 +29,24 @@ describe('arctrack', () => {
 
   describe('#trackClick', () => {
     beforeAll(() => {
-      document.body.innerHTML = '<a data-test="someClick"></a>';
+      const [link] = document.querySelectorAll('[data-test]');
+      link.dispatchEvent(
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+      );
     })
     it('delegates a click handler to fire on click event', () => {
-      const [link] = document.querySelectorAll('[data-test]');
-      // const event = new Event('click');
-      // link.dispatchEvent(event);
-      // const { calls } = opts.clickCb.mock;
-      // console.log(calls);
-      // expect(calls.length).toBe(1);
+      const { calls } = opts.clickCb.mock;
+      expect(calls.length).toBe(1);
+    });
+    it('returns analytics data containing \'type\', \'target\' and \'pageData\'', () => {
+      const [call] = opts.clickCb.mock.calls[0];
+      expect(call.type).not.toBeUndefined();
+      expect(call.target).not.toBeUndefined();
+      expect(call.pageData).not.toBeUndefined();
     });
   });
 });
