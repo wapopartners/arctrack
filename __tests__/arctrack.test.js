@@ -2,14 +2,17 @@ const Arctrack = require('../index');
 
 let at1;
 let name = 'test';
-let constructorTest = 0;
-let init = function () {
+const opts = {
+  initCb: function() {
     constructorTest = 1;
+  }
 }
+let constructorTest = 0;
+
 window.test = { property1: 'foo' };
 
 describe('arctrack', () => {
-    at1 = new Arctrack({ init, name });
+    at1 = new Arctrack({ name, opts });
     beforeEach(() => {
         window.dispatchEvent(new Event('load'));
     })
