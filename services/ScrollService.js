@@ -1,45 +1,56 @@
 const throttle = require('lodash/throttle');
+const generateShouldLoad = require('../util/generateShouldLoad');
 // import reduce from 'lodash/reduce'
 
-const DEFAULT_THROTTLE_INTERVAL = 1000;
+const DEFAULT_THROTTLE_SPEED = 1000;
 
 class ScrollService {
-  constructor({
-    selfDestruct = true,
-    throttle = true,
-    interval = DEFAULT_THROTTLE_INTERVAL,
-  } = {}) {
+  constructor(entries, throttleSpeed = DEFAULT_THROTTLE_SPEED) {
+    this.entries = entries;
+    this.throttleSpeed = throttleSpeed;
     this.testElements = this.testElements.bind(this);
-    this.selfDestruct = selfDestruct;
-    this.throttle = throttle;
-    this.interval = interval;
     this.pendingElements = {};
+    this.scrolledElements = {};
   }
 
   activate() {
-    this.scrollListener = throttle(this.testElements, this.interval);
-    window.addEventListener('scroll', this.scrollListener);
+    this.entries.forEach(entry => {
+      this.registerEntry(entry);
+      document.querySelectorAll(entry.selector)
+        .forEach((node, id) => {
+          this.registerElement({ node, type: entry.type, id });
+        });
+    });
+    return throttle(this.testElements, this.throttleSpeed);
   }
 
-  addElement({ shouldLoad, load, target, type, id }) {
-    if (shouldLoad(target)) {
-      load({ target, type })
-    } else {
-      this.pendingElements[id] = { shouldLoad, load, target, type, id }
-    }
+  registerEntry({ trackOnceOnly, load, buffer, type }) {
+    this.entries[type] = { 
+      trackOnceOnly, 
+      load, 
+      shouldLoad: generateShouldLoad(buffer), 
+    };
+  }
+
+  registerElement({ node, id, type }) {
+    this.pendingElements[id] = {
+      target: node,
+      type,
+    };
+  }
+
+  transferElement(key, trackOnceOnly) {
+    if (!trackOnceOnly) this.scrolledElements[key] = this.pendingElements[key];
+    delete this.pendingElements[key];
   }
 
   testElements() {
-    let pendingElement;
     for (let key in this.pendingElements) {
-      pendingElement = this.pendingElements[key];
-      const { shouldLoad, target, load, type } = pendingElement;
-      if (shouldLoad(target)) {
-        pendingElement.load({ target, type });
-        // delete this.pendingElements[key];
-        // if (this.selfDestruct && !Object.keys(this.pendingObjects).length) {
-        //   this.removeScrollListener()
-        // }
+      const { target, type } = this.pendingElements[key];
+      const entry = this.entries[type];
+      if (entry.shouldLoad(target)) {
+        entry.load({ target, type });
+        this.transferElement(key, entry.trackOnceOnly);
       }
     }
   }

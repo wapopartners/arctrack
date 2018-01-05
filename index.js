@@ -24,7 +24,8 @@ module.exports = class Arctrack {
     };
 
     if (opts.scrollCb) {
-      this.trackScroll(opts.scrollCb);
+      const onScroll = this.trackScroll(opts.scrollCb);
+      window.addEventListener('scroll', onScroll); 
     }
     
     if (opts.initCb) opts.initCb(this.pageData);
@@ -44,21 +45,8 @@ module.exports = class Arctrack {
 
   trackScroll(entries) {
     if (Array.isArray(entries)) {
-      this.scroller = new ScrollService();
-      entries.forEach(entry => {
-        const shouldLoad = generateShouldLoad(entry.buffer);
-        document.querySelectorAll(entry.selector)
-          .forEach((node, i) => {
-            this.scroller.addElement({
-              shouldLoad,
-              load: entry.cb,
-              target: node,
-              type: entry.type,
-              id: i,
-            });
-          });
-      });
-      this.scroller.activate();
+      this.scroller = new ScrollService(entries);
+      return this.scroller.activate();
     } else {
       logger.callbackFailed(
         'trackScroll', 
