@@ -1,5 +1,4 @@
 const throttle = require('lodash/throttle');
-const reduce = require('lodash/reduce');
 const generateId = require('../util/generateId');
 const generateShouldLoad = require('../util/generateShouldLoad');
 
@@ -25,57 +24,50 @@ class ScrollService {
       const nodes = document.querySelectorAll(entry.selector);
       for(let i = 0; i < nodes.length; i ++) {
         const node = nodes[i];
-        this.registerElement({ node, type: entry.type, id: generateId() });
+        this.registerElement({ 
+          node, 
+          type: entry.type, 
+          trackOnceOnly: entry.trackOnceOnly,
+          id: generateId(),
+        });
       }
     });
     return throttle(this.testElements, this.throttleSpeed);
   }
 
-  registerEntry({ trackOnceOnly, load, buffer, type }) {
-    this.entryTypes[type] = { 
-      trackOnceOnly, 
-      load, 
-      shouldLoad: generateShouldLoad(buffer), 
-    };
+  registerEntry({ load, buffer, type }) {
+    this.entryTypes[type] = { load, shouldLoad: generateShouldLoad(buffer) };
   }
 
-  registerElement({ node, id, type }) {
+  registerElement({ node, id, type, trackOnceOnly }) {
     this.pendingElements[id] = {
-      target: node,
       type,
+      target: node,
+      trackOnceOnly,
     };
   }
 
-  transferElement(key, trackOnceOnly) {
-    if (!trackOnceOnly) this.scrolledElements[key] = this.pendingElements[key];
-    delete this.pendingElements[key];
+  transferElement(key) {
+    this.scrolledElements[key] = this.pendingElements[key];
   }
 
   testElements() {
     this.detectScrollDirection();
     for (let key in this.pendingElements) {
-      const { target, type } = this.pendingElements[key];
+      const { target, type, trackOnceOnly } = this.pendingElements[key];
       const entry = this.entryTypes[type];
-      if (entry.shouldLoad(target)) {
+      if (entry.shouldLoad(target, this.scrollStatus.direction)) {
         entry.load({ target, type });
-        this.transferElement(key, entry.trackOnceOnly);
+        if (!trackOnceOnly) this.transferElement(key);
+        delete this.pendingElements[key];
       }
     }
   }
 
   handleDirectionChange() {
-    // if elements that have already been scrolled over should be tracked after
-    // a scroll direction change, remove them from 'scrolled elements' and make them 
-    // 'pending elements', otherwise, do nothing.
-    for(let type in this.entryTypes) {
-      const { trackOnceOnly } = this.entryTypes[type];
-      if (!trackOnceOnly) {
-        Object.assign(
-          this.pendingElements,
-          this.removeElementsOfType(type, 'scrolledElements'),
-        );
-      }
-    } 
+    const previouslyScrolled = this.scrolledElements;
+    this.scrolledElements = this.removePendingElements();
+    Object.assign(this.pendingElements, previouslyScrolled);
   }
   
   detectScrollDirection() {
@@ -95,14 +87,11 @@ class ScrollService {
     this.scrollStatus.lastY = currentY;
   }
 
-  removeElementsOfType(type, collection = 'pendingElements') {
+  removePendingElements() {
     const result = {};
-    for(let key in this[collection]) {
-      const el = this[collection][key];
-      if (el.type === type) {
-        result[key] = this[collection][key];
-        delete this[collection][key];
-      }
+    for(let el in this.pendingElements) {
+      result[el] = this.pendingElements[el];
+      delete this.pendingElements[el];
     }    
     return result;
   }
