@@ -34,7 +34,12 @@ class ScrollService {
         });
       }
     });
-    return throttle(this.testElements, this.throttleSpeed);
+    return pageData => (
+      throttle(
+        this.testElements.bind(this, pageData), 
+        this.throttleSpeed,
+      )
+    );
   }
 
   registerEntry({ load, shouldLoad, type, selector }) {
@@ -53,7 +58,7 @@ class ScrollService {
     this.scrolledElements[key] = this.pendingElements[key];
   }
 
-  testElements() {
+  testElements(pageData) {
     this.detectScrollDirection();
     for (let key in this.pendingElements) {
       const { target, type, trackOnceOnly } = this.pendingElements[key];
@@ -62,6 +67,7 @@ class ScrollService {
         entry.load({ 
           target: processTarget(target, entry.selector), 
           type,
+          pageData,
         });
         if (!trackOnceOnly) this.transferElement(key);
         delete this.pendingElements[key];

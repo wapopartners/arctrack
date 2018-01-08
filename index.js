@@ -23,7 +23,7 @@ module.exports = class Arctrack {
     };
 
     if (opts.scrollCb) {
-      const onScroll = this.trackScroll(opts.scrollCb);
+      const onScroll = this.trackScroll(opts.scrollCb)(this.pageData);
       window.addEventListener('scroll', onScroll); 
     }
     
