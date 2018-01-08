@@ -1,6 +1,6 @@
 const ScrollService = require('../services/ScrollService');
 
-jest.mock('../util/generateShouldLoad');
+jest.mock('../util/processEntry');
 
 describe('ScrollService', () => {
   let scroller;
@@ -10,14 +10,14 @@ describe('ScrollService', () => {
   const entry1 = {
     load: jest.fn(),
     buffer: { top: 5, bottom: 5 },
-    selector: '[data-page]',
+    selector: 'page',
     trackOnceOnly: false,
     type: 'page',
   };
   const entry2 = {
     load: jest.fn(),
     buffer: { top: 100, bottom: 500 },
-    selector: '[data-post]',
+    selector: 'post',
     trackOnceOnly: true,
     type: 'post',
   };
@@ -53,19 +53,33 @@ describe('ScrollService', () => {
       expect(typeof onScroll === 'function').toBe(true);
     });
     it('scales the DOM for elements specified in its entry\'s selector', () => {
-      expect(querySelectorSpy).toHaveBeenCalledWith(entryArray1[0].selector);
+      expect(querySelectorSpy).toHaveBeenCalledWith(`[data-${entryArray1[0].selector}]`);
     });
   });
   describe('#registerElement', () => {
     it('adds a scroll element to \'pendingElements\'', () => {
-      scroller.registerElement({ node: 'node', id: 'test', type: 'post' });
-      expect(scroller.pendingElements['test']).toEqual({target: 'node', type: 'post'});
+      scroller.registerElement({ node: 'node', id: 'test', type: 'post', trackOnceOnly: false });
+      expect(scroller.pendingElements['test']).toEqual({
+        target: 'node', 
+        type: 'post',
+        trackOnceOnly: false,
+      });
     });
   });
   describe('#registerEntry', () => {
     it('Adds a new entry object to \'entries\'', () => {
-      scroller.registerEntry({ trackOnceOnly: false, load: 'foo', buffer: {}, type: 'test' });
-      expect(Object.keys(scroller.entryTypes['test'])).toEqual([ 'trackOnceOnly', 'load', 'shouldLoad' ]);
+      scroller.registerEntry({ 
+        trackOnceOnly: false, 
+        load: 'foo', 
+        type: 'test',
+        buffer: {},
+        selector: 'page',
+      });
+      expect(Object.keys(scroller.entryTypes['test'])).toEqual([ 
+        'load', 
+        'shouldLoad',
+        'selector',
+      ]);
     });
   });
   describe('#transferElement', () => {
@@ -73,21 +87,22 @@ describe('ScrollService', () => {
     beforeEach(() => {
       scroller.activate();
       for (let key in scroller.pendingElements) {
-        elementKey = key;
         scroller.transferElement(key, false);
       }
-    })
-    it('adds element from \'pendingElements\' to \'scrolledElements\'', () => {
-      expect(scroller.scrolledElements[elementKey]).not.toBeUndefined();
     });
-    it('removes element from \'scrolledElements\'', () => {
-      expect(scroller.pendingElements).toEqual({});
+    it('adds element from \'pendingElements\' to \'scrolledElements\'', () => {
+      for(let key in scroller.scrolledElements) {
+        const scrolledEl = scroller.scrolledElements[key];
+        expect(scrolledEl.target).not.toBeUndefined();
+        expect(scrolledEl.type).not.toBeUndefined();
+      }
     });
   });
   describe('#testElements', () => {
     let entry;
-    beforeAll(() => {
+    beforeEach(() => {
       entry = entryArray1[0];
+      entry.load.mockClear();
       scroller.activate();
       scroller.testElements();
     });
@@ -95,7 +110,7 @@ describe('ScrollService', () => {
       expect(entry.load).toHaveBeenCalledTimes(1);
     });
   });
-  describe('#removeElementsOfType', () => {
+  describe('#removePendingElements', () => {
     let result;
     let elements;
     beforeEach(() => {
@@ -103,15 +118,17 @@ describe('ScrollService', () => {
       scroller2.activate();
       elements = scroller2.pendingElements;
     })
-    it('removes elements of type specified from \'pendingElements\' by default', () => {
+    it('removes elements from \'pendingElements\'', () => {
       expect(Object.keys(elements).length).toBe(2);
-      scroller2.removeElementsOfType('page');
-      expect(Object.keys(elements).length).toBe(1);
+      result = scroller2.removePendingElements();
+      expect(Object.keys(elements).length).toBe(0);
     });
     it('returns the removed elements', () => {
       for(let obj in result) {
         const removed = result[obj];
-        expect(removed).toHaveProperty('type', 'page');
+        expect(removed).toHaveProperty('type');
+        expect(removed).toHaveProperty('trackOnceOnly');
+        expect(removed).toHaveProperty('target');
       }
     });
   });
@@ -158,15 +175,17 @@ describe('ScrollService', () => {
         scroller2.registerEntry(entry);
       });
       scroller2.scrolledElements = {
-        '15975kiw11k7': { target: 'p', type: 'page' },
-        'om17111q32319a': { target: 'p', type: 'post' },
+        '15975kiw11k7': { target: 'p', type: 'page', trackOnceOnly: false },
+        'om17111q32319a': { target: 'p', type: 'post', trackOnceOnly: true },
       };
     });
-    it('moves \'scrolledElements\' that are not \'trackOnceOnly\' into \'pending elements\'', () => {
-      expect(scroller2.pendingElements).toEqual({});
+    it('moves \'scrolledElements\' into \'pending elements\'', () => {
       scroller2.handleDirectionChange();
-      expect(scroller2.pendingElements).toEqual({ '15975kiw11k7': { target: 'p', type: 'page' } });
-      expect(scroller2.scrolledElements).toEqual({ 'om17111q32319a': { target: 'p', type: 'post' }});
+      expect(scroller2.pendingElements).toEqual({ 
+        '15975kiw11k7': { target: 'p', type: 'page', trackOnceOnly: false },
+        'om17111q32319a': { target: 'p', type: 'post', trackOnceOnly: true },
+      });
+      expect(scroller2.scrolledElements).toEqual({});
     });
   });
 });

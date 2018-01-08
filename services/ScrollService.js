@@ -1,6 +1,7 @@
 const throttle = require('lodash/throttle');
 const generateId = require('../util/generateId');
-const generateShouldLoad = require('../util/generateShouldLoad');
+const processEntry = require('../util/processEntry');
+const processTarget = require('../util/processTarget');
 
 const DEFAULT_THROTTLE_SPEED = 1000;
 
@@ -20,14 +21,15 @@ class ScrollService {
 
   activate() {
     this.entries.forEach(entry => {
-      this.registerEntry(entry);
-      const nodes = document.querySelectorAll(entry.selector);
+      this.registerEntry(processEntry(entry));
+      const nodes = document.querySelectorAll(`[data-${entry.selector}]`);
+      const trackOnceOnly = entry.trackOnceOnly ? entry.trackOnceOnly : false;
       for(let i = 0; i < nodes.length; i ++) {
         const node = nodes[i];
         this.registerElement({ 
           node, 
           type: entry.type, 
-          trackOnceOnly: entry.trackOnceOnly,
+          trackOnceOnly,
           id: generateId(),
         });
       }
@@ -35,8 +37,8 @@ class ScrollService {
     return throttle(this.testElements, this.throttleSpeed);
   }
 
-  registerEntry({ load, buffer, type }) {
-    this.entryTypes[type] = { load, shouldLoad: generateShouldLoad(buffer) };
+  registerEntry({ load, shouldLoad, type, selector }) {
+    this.entryTypes[type] = { load, shouldLoad, selector };
   }
 
   registerElement({ node, id, type, trackOnceOnly }) {
@@ -57,7 +59,10 @@ class ScrollService {
       const { target, type, trackOnceOnly } = this.pendingElements[key];
       const entry = this.entryTypes[type];
       if (entry.shouldLoad(target, this.scrollStatus.direction)) {
-        entry.load({ target, type });
+        entry.load({ 
+          target: processTarget(target, entry.selector), 
+          type,
+        });
         if (!trackOnceOnly) this.transferElement(key);
         delete this.pendingElements[key];
       }

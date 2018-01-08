@@ -1,7 +1,6 @@
 const logger = require('./util/logger');
 const delegateEvent = require('./util/delegateEvent');
 const mineType = require('./util/mineType');
-const generateShouldLoad = require('./util/generateShouldLoad');
 const ScrollService = require('./services/ScrollService');
 
 module.exports = class Arctrack {
@@ -38,20 +37,18 @@ module.exports = class Arctrack {
       try {
         cb({ type, target, pageData });
       } catch (err){
-        logger.callbackFailed('trackClick', err);
+        logger.methodFailed('trackClick', err, cb);
       }
     }
   }
 
   trackScroll(entries) {
-    if (Array.isArray(entries)) {
-      this.scroller = new ScrollService(entries);
+    try {
+      const scrollerInput = Array.isArray(entries) ? entries : [entries];
+      this.scroller = new ScrollService(scrollerInput);
       return this.scroller.activate();
-    } else {
-      logger.callbackFailed(
-        'trackScroll', 
-        'Scroll callbacks must be contained in an array.'
-      );
+    } catch(err) {
+      logger.methodFailed('trackScroll', err);
     }
   }
 }
