@@ -4,7 +4,7 @@
   "description": "Library for simply handling application analytics data layer",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --config jest.config.js --no-cache",
     "build": "webpack --env prod",
     "dev": "rm -rf build && webpack --env dev --watch"
   },
