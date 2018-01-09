@@ -1,17 +1,25 @@
-const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const path = require('path');
 
-const isDev = process.env.NODE_ENV === 'dev';
+const generatePlugins = function (env) {
+  const plugins = [];
+  if (env.production) {
+    plugins.push(new UglifyJsPlugin({
+      sourceMap: true,
+    }));
+  }
+  return plugins;
+};
 
-module.exports = {
+module.exports = env => ({
   entry: './src/index.js',
   output: {
-    path: __dirname + '/build',
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
+    libraryTarget: 'umd',
   },
-  devtool: isDev ? 'inline-source-map' : false,
-  resolve: { 
-    extensions: ['.js', '.json'],
-  },
+  devtool: env.development ? 'inline-source-map' : false,
+  resolve: { extensions: ['.js', '.json'] },
   module: {
     rules: [
       {
@@ -19,10 +27,8 @@ module.exports = {
         enforce: 'pre',
         test: /\.js$/,
         exclude: /node_modules/,
-        options: {
-          configFile: '.eslintrc.js',
-        },
-      }, 
+        options: { configFile: '.eslintrc.js' },
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -36,4 +42,5 @@ module.exports = {
       },
     ],
   },
-};
+  plugins: generatePlugins(env),
+});
