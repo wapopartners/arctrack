@@ -1,4 +1,4 @@
-const ScrollService = require('../services/ScrollService');
+import ScrollService from '../services/ScrollService';
 
 jest.mock('../util/processEntry');
 

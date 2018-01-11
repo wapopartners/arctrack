@@ -1,11 +1,11 @@
-const throttle = require('lodash/throttle');
-const generateId = require('../util/generateId');
-const processEntry = require('../util/processEntry');
-const processTarget = require('../util/processTarget');
+import throttle from 'lodash/throttle';
+import generateId from '../util/generateId';
+import processEntry from '../util/processEntry';
+import processTarget from '../util/processTarget';
 
 const DEFAULT_THROTTLE_SPEED = 1000;
 
-class ScrollService {
+export default class ScrollService {
   constructor(entries, throttleSpeed = DEFAULT_THROTTLE_SPEED) {
     this.entries = entries;
     this.throttleSpeed = throttleSpeed;
@@ -13,22 +13,19 @@ class ScrollService {
     this.entryTypes = {};
     this.pendingElements = {};
     this.scrolledElements = {};
-    this.scrollStatus = {
-      lastY: 0,
-      direction: 'down',
-    };
+    this.scrollStatus = { lastY: 0, direction: 'down' };
   }
 
   activate() {
-    this.entries.forEach(entry => {
+    this.entries.forEach((entry) => {
       this.registerEntry(processEntry(entry));
       const nodes = document.querySelectorAll(`[data-${entry.selector}]`);
       const trackOnceOnly = entry.trackOnceOnly ? entry.trackOnceOnly : false;
-      for(let i = 0; i < nodes.length; i ++) {
+      for (let i = 0; i < nodes.length; i += 1) {
         const node = nodes[i];
-        this.registerElement({ 
-          node, 
-          type: entry.type, 
+        this.registerElement({
+          node,
+          type: entry.type,
           trackOnceOnly,
           id: generateId(),
         });
@@ -36,17 +33,31 @@ class ScrollService {
     });
     return pageData => (
       throttle(
-        this.testElements.bind(this, pageData), 
+        this.testElements.bind(this, pageData),
         this.throttleSpeed,
       )
     );
   }
 
-  registerEntry({ load, shouldLoad, type, selector }) {
-    this.entryTypes[type] = { load, shouldLoad, selector };
+  registerEntry({
+    load,
+    shouldLoad,
+    type,
+    selector,
+  }) {
+    this.entryTypes[type] = {
+      load,
+      shouldLoad,
+      selector,
+    };
   }
 
-  registerElement({ node, id, type, trackOnceOnly }) {
+  registerElement({
+    node,
+    id,
+    type,
+    trackOnceOnly,
+  }) {
     this.pendingElements[id] = {
       type,
       target: node,
@@ -60,19 +71,23 @@ class ScrollService {
 
   testElements(pageData) {
     this.detectScrollDirection();
-    for (let key in this.pendingElements) {
-      const { target, type, trackOnceOnly } = this.pendingElements[key];
+    Object.keys(this.pendingElements).forEach((key) => {
+      const {
+        target,
+        type,
+        trackOnceOnly,
+      } = this.pendingElements[key];
       const entry = this.entryTypes[type];
       if (entry.shouldLoad(target, this.scrollStatus.direction)) {
-        entry.load({ 
-          target: processTarget(target, entry.selector), 
+        entry.load({
+          target: processTarget(target, entry.selector),
           type,
           pageData,
         });
         if (!trackOnceOnly) this.transferElement(key);
         delete this.pendingElements[key];
       }
-    }
+    });
   }
 
   handleDirectionChange() {
@@ -80,7 +95,7 @@ class ScrollService {
     this.scrolledElements = this.removePendingElements();
     Object.assign(this.pendingElements, previouslyScrolled);
   }
-  
+
   detectScrollDirection() {
     const { pageYOffset: currentY } = window;
     let direction;
@@ -100,12 +115,11 @@ class ScrollService {
 
   removePendingElements() {
     const result = {};
-    for(let el in this.pendingElements) {
-      result[el] = this.pendingElements[el];
-      delete this.pendingElements[el];
-    }    
+    Object.keys(this.pendingElements).forEach((key) => {
+      result[key] = this.pendingElements[key];
+      delete this.pendingElements[key];
+    });
     return result;
   }
 }
 
-module.exports = ScrollService;
