@@ -1,4 +1,4 @@
-import Arctrack from '../index';
+import Arctrack from '../Arctrack';
 
 jest.mock('../util/mineType');
 
