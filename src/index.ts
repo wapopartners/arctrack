@@ -1,5 +1,5 @@
 import Arctrack from './Arctrack';
-import trackJs from './trackJs';
+import trackJs from './trackJs.ts';
 
 const store = {};
 

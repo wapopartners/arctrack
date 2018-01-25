@@ -12,14 +12,14 @@ const generatePlugins = function (env) {
 };
 
 module.exports = env => ({
-  entry: './src/index.js',
+  entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
     libraryTarget: 'umd',
   },
   devtool: env.development ? 'inline-source-map' : false,
-  resolve: { extensions: ['.js', '.json'] },
+  resolve: { extensions: ['.js', '.json', '.ts'] },
   module: {
     rules: [
       {
@@ -28,6 +28,11 @@ module.exports = env => ({
         test: /\.js$/,
         exclude: /node_modules/,
         options: { configFile: '.eslintrc.js' },
+      },
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.js$/,

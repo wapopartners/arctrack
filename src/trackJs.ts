@@ -1,4 +1,4 @@
-import { store } from './index';
+import { store } from './index.ts';
 
 export default function (cb) {
   return function decorate(target, name, descriptor) {
