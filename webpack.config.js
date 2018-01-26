@@ -30,11 +30,6 @@ module.exports = env => ({
         options: { configFile: '.eslintrc.js' },
       },
       {
-        test: /\.ts?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
-      },
-      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {

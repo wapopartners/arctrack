@@ -1,7 +1,6 @@
 import Arctrack from './Arctrack';
-import trackJs from './trackJs.ts';
-
-const store = {};
+import trackJs from './trackJs';
+import store from './store';
 
 export {
   Arctrack,

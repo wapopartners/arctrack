@@ -1,13 +1,6 @@
 import { store } from './index';
 
-interface Options {
-  click?: Function,
-  init?:  Function,
-  scroll?: Function,
-  public:  string,
-}
-
-const trackDom = function(opts: Options) {
+const trackDom = function(opts) {
   window.onload = function() {
     if (opts.public) {
       store.set('pageData', opts.public);
