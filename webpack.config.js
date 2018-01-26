@@ -12,7 +12,7 @@ const generatePlugins = function (env) {
 };
 
 module.exports = env => ({
-  entry: './src/index.ts',
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',

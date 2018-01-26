@@ -1,9 +1,9 @@
-import Arctrack from './Arctrack';
+import trackDom from './trackDom';
 import trackJs from './trackJs';
-import store from './store';
+import store from './Store';
 
 export {
-  Arctrack,
+  trackDom,
   trackJs,
   store,
 };
