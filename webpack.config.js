@@ -19,7 +19,7 @@ module.exports = env => ({
     libraryTarget: 'umd',
   },
   devtool: env.development ? 'inline-source-map' : false,
-  resolve: { extensions: ['.js', '.json', '.ts'] },
+  resolve: { extensions: ['.js', '.json'] },
   module: {
     rules: [
       {
