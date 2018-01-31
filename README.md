@@ -70,10 +70,10 @@ If you've seeded a page with data attributes that match `dataAttr`, whenever the
 
 _some serverside page template:_
 ```html
-<!-- other HTML or rendering tags --->
+<!-- other HTML or rendering tags -->
 
 <div id="foo" data-sitetrack="social-share">
-  <!-- markup... --->
+  <!-- markup... -->
 </div>
 
 ```
@@ -109,8 +109,9 @@ socialShare
 **`scroll`**  
 An array of scroll entries (objects), or a single scroll entry. Each entry corresponds to a DOM element that should trigger a tracking event when it's scrolled over.
 
-**Scroll Entry API**
-| Key      | Data type | Required | Default    |
+**Scroll Entry API** . 
+
+| Key      | Data type | Required | Default    |
 |----------|-----------|----------|------------|
 |`load`    | `function`| `true`   | `undefined`|
 |`buffer`  | `object`  | `false`  |            |
