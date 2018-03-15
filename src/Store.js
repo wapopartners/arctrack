@@ -1,5 +1,4 @@
 import getTarget from './util/getTarget';
-import logger from './util/logger';
 
 class Store {
   set({
@@ -7,14 +6,16 @@ class Store {
     location,
     value,
   }) {
-    let val;
-    if (location) {
+    // if there's a value, set that as the value of object w/ key 'name'
+    if (value) {
+      this[name] = value;
+    } else {
       const loc =
         (location.indexOf('.') !== -1)
           ? location.split('.')
           : location;
 
-      val =
+      this[name] =
         (Array.isArray(loc))
           ? getTarget({
             properties: loc.slice(0, loc.length - 1),
@@ -22,9 +23,9 @@ class Store {
           })
           : window[loc];
     }
-    this[name] = val || value;
+
     if (!this[name]) {
-      throw new Error('Store#set: must provide either a location or a value');
+      throw new Error('Store#set: must provide either a location string or a value');
     }
   }
 }
