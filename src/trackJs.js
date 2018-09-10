@@ -1,15 +1,13 @@
-import store from './Store';
-
-export default function (cb) {
+export default function (cb, eventName) {
   return function decorate(target, name, descriptor) {
     const oldValue = descriptor.value;
     const value = function (...args) {
       try {
         cb({
-          target,
-          name,
+          methodName: name,
+          instance: this,
+          eventName,
           args,
-          pageData: store.pageData,
         });
       } catch (err) {
         throw new Error(`trackJs: failed with the following error: ${err}`);

@@ -1,7 +1,4 @@
 import trackJs from '../trackJs';
-import store from '../Store';
-
-jest.mock('../Store');
 
 describe('trackJs', () => {
   let foo;
@@ -9,24 +6,28 @@ describe('trackJs', () => {
   let mockArgs;
   const decoratedArgs = 'Dan';
   const errorMsg = 'mockCb has encountered an error!';
-  const mockCb = jest.fn(({ target, name, args, pageData }) => null)
+  const mockCb = jest.fn(({
+    eventName,
+    methodName, 
+    instance,
+    args,
+  }) => null)
 
   class Foo {
-    @trackJs(mockCb)
+    @trackJs(mockCb, 'bar-event')
     bar(x) {
       return `${x} is returned by 'bar'`;
     }
   }
 
   beforeAll(() => {
-    store.pageData = { test: true };
     barSpy = jest.spyOn(Foo.prototype, 'bar');
     foo = new Foo();
     mockArgs = {
-      target: foo,
-      name: 'bar',
+      eventName: 'bar-event',
+      methodName: 'bar',
+      instance: foo,
       args: [ decoratedArgs ],
-      pageData: store.pageData,
     };
   });
   beforeEach(() => {
