@@ -31,9 +31,9 @@ export default class ScrollService {
         });
       }
     });
-    return pageData => (
+    return (
       throttle(
-        this.testElements.bind(this, pageData),
+        this.testElements,
         this.throttleSpeed,
       )
     );
