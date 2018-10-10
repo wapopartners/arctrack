@@ -12,7 +12,10 @@ const generatePlugins = function (env) {
 };
 
 module.exports = env => ({
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    'track-dom-click-demo': './demo/code/track-dom/click/index.js',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
