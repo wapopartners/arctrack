@@ -250,7 +250,53 @@ export const trackClicks = function({ instance, eventName }) {
   // ... 
 }
 ```  
-In the example above, `active` would be `false` if the component were clicked to be opened, since the `trackJs` callback fires _**before**_ the method code itself runs, setting state to `{active: true}`.
+In the example above, `active` would be `false` if the component were clicked to be opened, since the `trackJs` callback fires _**before**_ the method code itself runs, setting state to `{active: true}`. Using `eventName` allows you as the developer to combine multiple event types into a single callback, such as `trackClicks`, which could track different types of click events differently depending on the `eventName` value, but reuse a lot of code as well. 
+
+**`args`**  
+
+These are the arguments passed to the method you are decorating. For React `onClick` handlers, this parameter could give you access to the click target, for very refined observation and tracking.  
+
+Example:
+
+```javascript
+import React, { Component } from 'react';
+import { trackJs } from '@arc-publishing/arctrack';
+
+class Comments extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showComments: props.loggedIn ? false : true,
+    };
+    // ...
+  }
+  // ...
+  @trackJs(function({ args }) {
+    if (args.length > 0) {
+      const [syntheticEvent] = args;
+      console.log('target', syntheticEvent.target);
+    }
+  })
+  toggleShowComments(e) {
+    this.setState({ showComments: !this.state.showComments });
+  }
+  
+  render() {
+    return (
+      <div>
+        <button onClick={this.toggleShowComments}>
+          {/* ... */}
+        </button>
+        {this.state.showComments && (
+          <Fragment>
+            {/* ... */}
+          </Fragment>
+        )}
+      </div>
+    );
+  }
+}
+```
 
 ## Example Usage 
 See recipes here. And try them out in the demo project. 
