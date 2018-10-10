@@ -6,7 +6,7 @@ const app = express();
 
 const port = 3000;
 
-app.use('/track-dom', express.static(`${__dirname}/code/static`));
+app.use('/track-dom', express.static(`${__dirname}/code`));
 app.use('/track-dom', express.static(path.resolve(__dirname, '..')));
 
 app.get('/track-dom', (req, res) => {
