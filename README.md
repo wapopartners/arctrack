@@ -304,4 +304,5 @@ class Comments extends Component {
 ```
 
 ## Example Usage 
-See recipes here. And try them out in the demo project. 
+* [click tracking](/demo/code/track-dom/click/click.md)
+* [scroll tracking](/demo/code/track-dom/scroll/scroll.md)

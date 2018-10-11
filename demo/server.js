@@ -11,13 +11,17 @@ app.use('/track-click', express.static(path.resolve(__dirname, '..', 'dist')));
 app.use('/track-scroll', express.static(path.resolve(__dirname, '..', 'demo')));
 app.use('/track-scroll', express.static(path.resolve(__dirname, '..', 'dist')));
 
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'code', 'index.html'));
+});
+
 app.get('/track-click', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'code', 'click.html'));
 });
 
 app.get('/track-scroll', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'code', 'scroll.html'));
-})
+});
 
 app.get('/omniture-requests/*', ({ query }, res) => {
   if (query) {

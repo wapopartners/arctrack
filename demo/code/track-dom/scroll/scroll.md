@@ -27,7 +27,7 @@ For this demo, we're using a static HTML file with no React, to mimic a Classic 
 ```
 This is what's meant by "seeding" the DOM: adding data attributes to your markup that will act as flags for `trackDom` to use once it's registered the elements for scrolling.
 
-Look at `demo/code/scroll/index.js` to see this example `trackDom` implementation.
+Look at [index.js](index.js) to see this example `trackDom` implementation.
 
 **NOTE**: The demo analytics file that uses `Arctrack` is loaded as a script tag in `scroll.html`, but you can just as easily add the code to your main bundle file.
 
