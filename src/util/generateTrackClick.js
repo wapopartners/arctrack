@@ -3,7 +3,6 @@ import logger from './logger';
 
 export default ({
   cb,
-  pageData,
   dataAttr,
 }) => (
   ({ target }) => {
@@ -11,7 +10,6 @@ export default ({
       cb({
         type: mineType(target, dataAttr),
         target,
-        pageData,
       });
     } catch (err) {
       logger.defaultError(err);
