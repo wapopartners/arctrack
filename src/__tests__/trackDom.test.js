@@ -7,9 +7,7 @@ jest.mock('../Store');
 describe('trackDom', () => {
   window.testPageData = { property1: 'foo' };
   const opts = {
-    public: window.testPageData,
     dataAttr: 'data-test',
-    init: jest.fn(),
     click: jest.fn(),
     scroll: jest.fn(),
   };
@@ -17,16 +15,6 @@ describe('trackDom', () => {
   beforeAll(() => {
     trackDom(opts);
     window.dispatchEvent(new Event('load'));
-  });
-
-  it('adds pageData to the store if opts.public is present', () => {
-    expect(store.pageData).not.toBeUndefined();
-    expect(store.pageData).toEqual({ property1: 'foo' });
-  });
-
-  it('executes an init callback on load if opts.init is present', () => {
-    const { calls } = opts.init.mock;
-    expect(calls.length).toBe(1);
   });
 
   it('executes a click callback on click if opts.click is present', () => {
@@ -39,14 +27,10 @@ describe('trackDom', () => {
     const { calls } = opts.click.mock;
     expect(calls.length).toBe(1);
   });
+
   // it('executes a scroll callback on scroll if opts.scroll is present', () => {
-  //   window.onscroll = function() {
-  //     console.error('SCROLLIN!');
-  //   }
-  //   for (let i = 0; i < 100; i ++) {
-  //     window.dispatchEvent(new CustomEvent('scroll'));
-  //   }
+  //   window.dispatchEvent(new Event('scroll'));
   //   const { calls } = opts.scroll.mock;
-  //   expect(calls.length).toBe(1);
+  //   expect(calls.length).toBeGreaterThan(0);
   // });
 });
