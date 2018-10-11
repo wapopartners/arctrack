@@ -32,4 +32,4 @@ This is what's meant by "seeding" the DOM: adding data attributes to your markup
 
 Look at `demo/code/click/index.js` to see this example `trackDom` implementation.
 
-**NOTE**: The demo analytics file that uses `Arctrack` is loaded as a script in `index.html`, but you can just as easily add the code to your main bundle file.
+**NOTE**: The demo analytics file that uses `Arctrack` is loaded as a script tag in `click.html`, but you can just as easily add the code to your main bundle file.
