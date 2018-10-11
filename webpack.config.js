@@ -15,6 +15,7 @@ module.exports = env => ({
   entry: {
     main: './src/index.js',
     'track-dom-click-demo': './demo/code/track-dom/click/index.js',
+    'track-dom-scroll-demo': './demo/code/track-dom/scroll/index.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

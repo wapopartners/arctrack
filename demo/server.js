@@ -5,13 +5,19 @@ const path = require('path');
 const app = express();
 
 const port = 3000;
+// for /track-click route, serve from the `./demo` and `./dist`
+app.use('/track-click', express.static(path.resolve(__dirname, '..', 'demo')));
+app.use('/track-click', express.static(path.resolve(__dirname, '..', 'dist')));
+app.use('/track-scroll', express.static(path.resolve(__dirname, '..', 'demo')));
+app.use('/track-scroll', express.static(path.resolve(__dirname, '..', 'dist')));
 
-app.use('/track-dom', express.static(`${__dirname}/code`));
-app.use('/track-dom', express.static(path.resolve(__dirname, '..')));
-
-app.get('/track-dom', (req, res) => {
-  res.sendFile('index.html');
+app.get('/track-click', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'code', 'click.html'));
 });
+
+app.get('/track-scroll', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'code', 'scroll.html'));
+})
 
 app.get('/omniture-requests/*', ({ query }, res) => {
   if (query) {
