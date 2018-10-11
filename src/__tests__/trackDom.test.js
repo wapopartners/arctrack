@@ -1,8 +1,6 @@
 import trackDom from '../trackDom';
-import store from '../Store';
 
 jest.mock('../util/mineType');
-jest.mock('../Store');
 
 describe('trackDom', () => {
   window.testPageData = { property1: 'foo' };
@@ -12,6 +10,7 @@ describe('trackDom', () => {
     scroll: jest.fn(),
   };
   document.body.innerHTML = '<a data-test="someClick"></a>';
+
   beforeAll(() => {
     trackDom(opts);
     window.dispatchEvent(new Event('load'));
