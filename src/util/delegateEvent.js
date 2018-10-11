@@ -1,6 +1,5 @@
 // replacement for $(document).on('click', fn)
 function delegateEvent(eventType, fn, matcher, el = document) {
-
   el.addEventListener(eventType, (e) => {
     if (!matcher ||
       e.target.matches(matcher) || // firefox

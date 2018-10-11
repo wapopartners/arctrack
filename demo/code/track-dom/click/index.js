@@ -1,8 +1,9 @@
 import { trackDom } from '../../../../src';
 
 trackDom({
-  click: function({ target, type }) {
-    console.log('is this a thing?', target, type);
-  }
+  click({ target, type }) {
+    console.log(`firing analytics for '${type}!'`);
+    console.log('And here\'s the click target:\n', target);
+  },
 });
 
