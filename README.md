@@ -72,20 +72,24 @@ An array of scroll entries (objects), or a single scroll entry. Each entry corre
 |----------|-----------|----------|
 |`load`    | `function`| `true`   |
 |`buffer`  | `object`  | `false`  |
-|`selector`| `string`  | `false`  |
+|`selector`| `string`  | `true`   |
 |`type`    | `string`  | `true`   |
+|`trackOnceOnly`    | `bool`  | `false` |
 
 `load`  
 Developer-defined callback that fires whenever the user scrolls over a page element of this scroll entry type. `load` is passed an object containing:
 
-* `target`: Specific DOM Element that was scrolled over (the same as `Event.target`)
+* `target`: in this case, `target` is an object containing two properties: `node`, which is the DOM element that was scrolled over, and `data`, which is the value assigned to the scroll element's data attribute. 
 * `type`: specified in this entry's `type` property.
 
 `buffer`  
 An object containing properties `top` and `bottom` (both JavaScript `number`), that tells the scroll listener if it should observe a scroll once a buffer (some amount of vertical pixel distance) has been breached either _above_ or _below_ a target element. This can be useful if a tracking event needs to be dispatched when a page element is _almost_ in the viewport.
 
 `selector`  
-Should correspond to a data-attribute name on types of elements you would like to have scroll-tracking for. 
+Should correspond to a data-attribute name on types of elements you would like to have scroll-tracking for. For example, if `selector: 'foo'`, the scroll entry API will search the DOM for elements with a  `data-foo` attribute. 
+
+`trackOnceOnly`  
+By default, the scroll entry API will continue to fire the `load` callback every time a registered element is scrolled over. For example, if you've scrolled _down_ over a registered element, it will fire, but if you then scroll back _up_ over it, it will fire again. You can turn this off by setting `trackOnceOnly` to `true`. 
 
 In the example markup below, your `selector` would be `mysite-leaderboard-ad`:
 
@@ -96,7 +100,7 @@ In the example markup below, your `selector` would be `mysite-leaderboard-ad`:
 ```
 
 `type`  
-A name you assign to a particular order of elements on a page. `type` allows you to track scrolling over a number of different types of elements on a single page. For the example above, it could be `'ad'`. 
+A name you assign to a particular order of elements on a page. `type` allows you to track scrolling for a number of different types of elements on a single page. `type` can often just be the same value as `selector`, but if you'd like the `selector` and the element `type` to be named differently, you have that flexibility. 
 
 **Complete scrolling example**
 
@@ -124,7 +128,8 @@ scrollEntries.push({
     /* some logic and custom analytics-gathering for media modules */
   },
   selector: 'video-playlist',
-  type: 'media-module'
+  type: 'media-module',
+  trackOnceOnly: true
 });
 const options = {
   scroll: scrollEntries
@@ -299,4 +304,5 @@ class Comments extends Component {
 ```
 
 ## Example Usage 
-See recipes here. And try them out in the demo project. 
+* [click tracking](/demo/code/track-dom/click/click.md)
+* [scroll tracking](/demo/code/track-dom/scroll/scroll.md)
