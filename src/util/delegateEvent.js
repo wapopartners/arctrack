@@ -12,4 +12,4 @@ function delegateEvent(eventType, fn, matcher, el = document) {
   });
 }
 
-module.exports = delegateEvent;
+export default delegateEvent;

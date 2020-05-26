@@ -1,4 +1,4 @@
-module.exports = function (entry) {
+export default function (entry) {
   return Object.assign(
     {},
     {
