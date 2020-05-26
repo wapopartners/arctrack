@@ -1,5 +1,5 @@
 {
-  "name": "arctrack",
+  "name": "@arc-publishing/arctrack",
   "version": "2.0.1",
   "description": "Library for simply handling application analytics data layer",
   "main": "dist/main.js",
