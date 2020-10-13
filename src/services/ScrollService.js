@@ -1,4 +1,4 @@
-import throttle from 'lodash/throttle';
+import throttle from 'lodash.throttle';
 import generateId from '../util/generateId';
 import processEntry from '../util/processEntry';
 import processTarget from '../util/processTarget';
